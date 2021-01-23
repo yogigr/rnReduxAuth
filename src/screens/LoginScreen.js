@@ -1,14 +1,29 @@
 import React, { Component } from 'react';
+
 import {
-  View,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity
+  StatusBar
 } from 'react-native';
+
+import {
+  Container,
+  Header,
+  Content,
+  Form,
+  Item,
+  Label,
+  Input,
+  Body,
+  Title,
+  Left,
+  Icon,
+  Button,
+  Text
+} from 'native-base'
+
 
 import { connect } from 'react-redux'
 import { setToken, setAuthUser, setAuthLoading, login } from '../redux/auth/auth_action'
+import { color } from 'react-native-reanimated';
 
 class LoginScreen extends Component {
   constructor(props) {
@@ -29,82 +44,57 @@ class LoginScreen extends Component {
     const { error, loading } = this.props
 
     return (
-      <View style={styles.container}>
-        <Text style={styles.logo}>
-          Auth Redux
-        </Text>
-        <View style={styles.form}>
-
-          <TextInput style={styles.textInput}
-            placeholder="Email..."
-            onChangeText={text => this.setState({ email: text })} />
-
-          {
-            error && error.email ? (
-              <Text style={styles.errorText}>
-                { error.email[0]}
-              </Text>
-            ) : null
-          }
-
-
-          <TextInput style={styles.textInput}
-            placeholder="Password..."
-            secureTextEntry
-            onChangeText={text => this.setState({ password: text })} />
-          <TouchableOpacity
-            disabled={loading}
-            style={styles.loginButton}
-            onPress={this._login}
-          >
-            <Text style={styles.loginText}>
+      <Container>
+        <StatusBar hidden />
+        <Header>
+          <Left></Left>
+          <Body>
+            <Title style={{ textAlign: 'center' }}>
+              AUTH REDUX LOGIN
+            </Title>
+          </Body>
+        </Header>
+        <Content style={{ padding: 10, }}>
+          <Form>
+            <Item floatingLabel error={error && error.email}>
+              <Label>EMAIL</Label>
+              <Input onChangeText={text => this.setState({ email: text })} />
               {
-                loading ? 'Loading...' : 'Login'
+                error && error.email ? (
+                  <Icon name='close-circle' style={{ color: 'red', }} />
+                ) : null
               }
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </View>
+            </Item>
+            {
+              error && error.email ? (
+                <Text style={{ color: 'red', marginTop: 15 }}>
+                  { error.email[0]}
+                </Text>
+              ) : null
+            }
+            <Item floatingLabel last style={{ paddingBottom: 30 }}>
+              <Label>PASSWORD</Label>
+              <Input
+                secureTextEntry
+                onChangeText={text => this.setState({ password: text })} />
+            </Item>
+            <Button block
+              disabled={loading}
+              onPress={this._login}
+            >
+              <Text>
+                {
+                  loading ? 'Loading...' : 'Login'
+                }
+              </Text>
+            </Button>
+          </Form>
+
+        </Content>
+      </Container>
     )
   }
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center'
-  },
-  logo: {
-    fontSize: 30,
-    marginBottom: 15
-  },
-  form: {
-    backgroundColor: '#fff',
-    width: '100%',
-    paddingHorizontal: 15,
-    paddingVertical: 30
-  },
-  textInput: {
-    backgroundColor: '#eee',
-    marginVertical: 15,
-    padding: 15,
-    fontSize: 15
-  },
-  loginButton: {
-    backgroundColor: 'black',
-    alignItems: 'center',
-    marginVertical: 15,
-    padding: 15
-  },
-  loginText: {
-    color: '#fff',
-    fontSize: 15
-  },
-  errorText: {
-    color: 'red'
-  }
-})
 
 const mapDispatchToProps = dispatch => (
   {

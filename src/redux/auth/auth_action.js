@@ -25,19 +25,29 @@ export const setLoading = (bool) => ({
   payload: bool
 })
 
+export const setAuthMode = (mode) => ({
+  type: 'SET_AUTH_MODE',
+  payload: mode
+})
+
 export const checkAuth = () => dispatch => {
   getUserToken().then((token) => {
     if (token !== null) {
-      dispatch(setToken(token))
       getAuthUser(token).then((user) => {
         if (user !== null) {
           dispatch(setAuthUser(user))
-          dispatch(setAuthLoading(false))
+          dispatch(setToken(token))
         }
+      }).catch((errUser) => {
+        console.log(errUser)
       })
-    } else {
-      dispatch(setAuthLoading(false))
     }
+  }).catch((errToken) => {
+    console.log(errToken)
+  }).finally(() => {
+    setTimeout(() => {
+      dispatch(setAuthLoading(false))
+    }, 3000);
   })
 }
 
@@ -76,6 +86,7 @@ export const login = (email, password) => dispatch => {
 
 export const logout = (token) => dispatch => {
   dispatch(setAuthLoading(true))
+  dispatch(setLoading(true))
   logoutServer(token).then((logoutSuccess) => {
     if (logoutSuccess) {
       removeUserToken().then((removeTokenSuccess) => {
@@ -83,6 +94,7 @@ export const logout = (token) => dispatch => {
           dispatch(setToken(null))
           dispatch(setAuthUser(null))
           dispatch(setAuthLoading(false))
+          dispatch(setLoading(false))
         }
       })
     }

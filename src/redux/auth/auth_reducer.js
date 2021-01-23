@@ -1,6 +1,7 @@
 import { getUserToken, getAuthUser } from './auth_helper'
 
 const initialState = {
+    authMode: 'login',
     authLoading: true,
     loading: false,
     token: null,

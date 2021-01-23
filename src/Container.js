@@ -25,14 +25,16 @@ class Container extends Component {
     const { authLoading, token } = this.props
     return (
       <NavigationContainer>
-        <Stack.Navigator>
+        <Stack.Navigator screenOptions={{
+          headerShown: false
+        }}>
           {
             authLoading ? (
-              <Stack.Screen name="Splash" component={SplashScreen} options={{ headerShown: false }} />
+              <Stack.Screen name="Splash" component={SplashScreen} />
             ) : token != null ? (
               <Stack.Screen name="Home" component={HomeScreen} />
             ) : (
-                  <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+                  <Stack.Screen name="Login" component={LoginScreen} />
                 )
           }
         </Stack.Navigator>
