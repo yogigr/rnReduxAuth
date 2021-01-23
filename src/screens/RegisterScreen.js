@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
-
-import {
-  StatusBar
-} from 'react-native';
+import { StatusBar } from 'react-native';
+import { connect } from 'react-redux'
+import { register, setAuthMode } from '../redux/auth/auth_action'
+import { sendError422 } from '../helpers';
+import { st } from '../styles';
 
 import {
   Container,
@@ -22,24 +23,22 @@ import {
   Toast
 } from 'native-base'
 
-
-import { connect } from 'react-redux'
-import { login, setAuthMode } from '../redux/auth/auth_action'
-import { sendError422 } from '../helpers';
-import { st } from '../styles';
-
-class LoginScreen extends Component {
+class RegisterScreen extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.state = {
+      name: '',
       email: '',
-      password: ''
-    }
+      password: '',
+      password_confirmation: ''
+    };
   }
 
-  _login = () => {
-    if (this.state.email != '' && this.state.password != '') {
-      this.props.login(this.state.email, this.state.password)
+  _register = () => {
+    if (this.state.name != '' && this.state.email != '' && this.state.password != ''
+      && this.state.password_confirmation != '') {
+      this.props.register(this.state.name, this.state.email,
+        this.state.password, this.state.password_confirmation)
     }
   }
 
@@ -55,26 +54,36 @@ class LoginScreen extends Component {
 
   render() {
     const { error, loading } = this.props
-
     return (
       <Container>
         <StatusBar hidden />
         <Header>
           <Body style={{ alignItems: 'center' }}>
             <Title>
-              AUTH REDUX LOGIN
+              AUTH REDUX REGISTER
             </Title>
           </Body>
         </Header>
         <Content style={[st.bgPrimary, { paddingVertical: 100, paddingHorizontal: 15 }]}>
           <Form>
             <Item rounded style={[st.bgLight, { marginBottom: 15 }]}>
+              <Icon type='FontAwesome' name='user' />
+              <Input
+                placeholder="Name"
+                onChangeText={text => this.setState({ name: text })} />
+              {
+                error !== null && error.name !== undefined ? (
+                  <Icon name='close-circle' style={{ color: 'red', }} />
+                ) : null
+              }
+            </Item>
+            <Item rounded style={[st.bgLight, { marginBottom: 15 }]}>
               <Icon type='FontAwesome' name='envelope-o' />
               <Input
                 placeholder="Email"
                 onChangeText={text => this.setState({ email: text })} />
               {
-                error && error.email.length > 0 ? (
+                error !== null && error.email !== undefined ? (
                   <Icon name='close-circle' style={{ color: 'red', }} />
                 ) : null
               }
@@ -85,33 +94,46 @@ class LoginScreen extends Component {
                 placeholder='Password'
                 secureTextEntry
                 onChangeText={text => this.setState({ password: text })} />
+              {
+                error !== null && error.password !== undefined ? (
+                  <Icon name='close-circle' style={{ color: 'red', }} />
+                ) : null
+              }
+            </Item>
+            <Item rounded style={[st.bgLight, { marginBottom: 15 }]}>
+              <Icon type='FontAwesome' name='key' />
+              <Input
+                placeholder='Password confirmation'
+                secureTextEntry
+                onChangeText={text => this.setState({ password_confirmation: text })} />
             </Item>
             <Button block rounded danger
               disabled={loading}
-              onPress={this._login}
+              onPress={this._register}
               style={{ marginBottom: 15 }}
             >
               <Text>
                 {
-                  loading ? 'Loading...' : 'Login'
+                  loading ? 'Loading...' : 'Register'
                 }
               </Text>
             </Button>
             <Button transparent light block
-              onPress={() => this.props.setAuthMode('register')}>
-              <Text style={st.textLight}>Register?</Text>
+              onPress={() => this.props.setAuthMode('login')}>
+              <Text style={st.textLight}>Login?</Text>
             </Button>
           </Form>
 
         </Content>
       </Container>
-    )
+    );
   }
 }
 
 const mapDispatchToProps = dispatch => (
   {
-    login: (email, password) => dispatch(login(email, password)),
+    register: (name, email, password, password_confirmation) =>
+      dispatch(register(name, email, password, password_confirmation)),
     setAuthMode: (mode) => dispatch(setAuthMode(mode))
   }
 )
@@ -120,4 +142,4 @@ const mapStateToProps = state => (
   { error, loading } = state.authReducer
 )
 
-export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(RegisterScreen);

@@ -40,6 +40,31 @@ export const removeUserToken = async () => {
   return result
 }
 
+export const registerUser = async (name, email, password, password_confirmation) => {
+  let errorMessage = null
+  let result = false
+  await axios.post(config.API_URL + '/register', {
+    name: name,
+    email: email,
+    password: password,
+    password_confirmation: password_confirmation
+  }, {
+    headers: {
+      'Accept': 'application/json'
+    }
+  }).then(response => {
+    result = true
+  }).catch(error => {
+    if (error.response.status == 422) {
+      errorMessage = error.response.data.errors
+    } else {
+      console.log(error.response.data)
+    }
+  })
+
+  return { result, errorMessage }
+}
+
 export const loginUser = async (email, password) => {
 
   var token = null

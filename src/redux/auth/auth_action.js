@@ -1,4 +1,4 @@
-import { getAuthUser, getUserToken, loginUser, logoutServer, removeUserToken, setUserToken } from "./auth_helper"
+import { getAuthUser, getUserToken, loginUser, logoutServer, registerUser, removeUserToken, setUserToken } from "./auth_helper"
 
 export const setToken = (token) => ({
   type: 'SET_TOKEN',
@@ -49,6 +49,30 @@ export const checkAuth = () => dispatch => {
       dispatch(setAuthLoading(false))
     }, 3000);
   })
+}
+
+export const register = (name, email, password, password_confirmation) => dispatch => {
+  dispatch(setLoading(true))
+  registerUser(name, email, password, password_confirmation)
+    .then(({ result, errorMessage }) => {
+      if (errorMessage != null) {
+        dispatch(setError(errorMessage))
+        setTimeout(() => {
+          dispatch(setError(null))
+        }, 3000);
+      }
+      if (result == true) {
+        dispatch(setAuthMode('login'))
+        dispatch(setAuthLoading(true))
+      }
+    }).catch((err) => {
+      console.log(err)
+    }).finally(() => {
+      setTimeout(() => {
+        dispatch(setLoading(false))
+        dispatch(setAuthLoading(false))
+      }, 3000);
+    })
 }
 
 export const login = (email, password) => dispatch => {
